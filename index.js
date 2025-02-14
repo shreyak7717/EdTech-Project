@@ -6,6 +6,7 @@ const { userRouter } = require("./routes/user");
 // createCourseRoute(app);
 
 app.use("/user", userRouter)
+app.use("/admin", adminRouter)
 app.use("/course",courseRouter)
 
 const PORT = 3000
