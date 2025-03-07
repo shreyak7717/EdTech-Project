@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require('express')
 const app = express()
 const { courseRouter } = require("./routes/course");
@@ -16,7 +17,7 @@ app.use("/course",courseRouter)
 const PORT = 3000
 async function main() {
     try {
-        await mongoose.connect('mongodb+srv://shreyakhandelwal23cse:shreya@clusterstudent.e0ks9.mongodb.net/');
+        await mongoose.connect(process.env.MONGO_URI);
         console.log("Connected to database");
         app.listen(3000);
         console.log(`App is listening on port ${PORT}`)
