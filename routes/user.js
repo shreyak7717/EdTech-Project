@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const { userModel} = require("../models/allModel")
 const userRouter = Router();
 const bcrypt = require('bcrypt');
 
@@ -26,10 +27,23 @@ userRouter.post('/signup',async (req,res)=>{
     }
 });
 
-userRouter.post('/signin',(req,res)=>{
-    res.json({
-        message:"Signin endpoint"
-    });
+userRouter.post('/signin',async (req,res)=>{
+        try{
+            const { email, password} = req.body;
+            const exisitingUser = await userModel.findOne({email});
+            if(!exisitingUser){
+                res.status(400).json({message:"User not found!"});
+            }
+
+            const isMatch = await bcrypt.compare(password, user.password);
+            if(!isMatch){
+                res.status(401).json({message:"Invalid credentials"});
+            }
+
+            res.status(200).json({message:"Login Successful"});
+        }catch(error){
+            res.status(500).json({message:"Error logging in",error});
+        }
 });
 
 userRouter.get('/purchases',(req,res)=>{
@@ -52,3 +66,4 @@ userRouter.get('/course',(req,res)=>{
 module.exports={
     userRouter : userRouter
 }
+

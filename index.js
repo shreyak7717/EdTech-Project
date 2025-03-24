@@ -13,6 +13,10 @@ app.use("/user", userRouter)
 app.use("/admin", adminRouter)
 app.use("/course",courseRouter)
 
+
+//middleware route
+app.use(express.json());
+
 // dbConnect();
 const PORT = 3000
 async function main() {
