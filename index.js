@@ -7,15 +7,15 @@ const { adminRouter } = require("./routes/admin");
 const {adminModel} = require("./models/allModel")
 const mongoose = require('mongoose');
 
+//middleware route
+app.use(express.json());
+
 // createCourseRoute(app);
 
 app.use("/user", userRouter)
 app.use("/admin", adminRouter)
 app.use("/course",courseRouter)
 
-
-//middleware route
-app.use(express.json());
 
 // dbConnect();
 const PORT = 3000
