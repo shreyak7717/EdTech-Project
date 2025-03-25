@@ -2,6 +2,8 @@ const { Router } = require('express');
 const { userModel} = require("../models/allModel")
 const userRouter = Router();
 const bcrypt = require('bcrypt');
+const {userSignupSchema, userLoginSchema} = require("../utils/validation")
+const {generateToken ,verifyToken} = require("../utils/jwt");
 
 const saltRounds = 10;
 const myPlaintextPassword = 's0/\/\P4$$w0rD';
@@ -10,14 +12,14 @@ const someOtherPlaintextPassword = 'not_bacon';
 
 userRouter.post('/signup',async (req,res)=>{
     try{
-        const {firstName, lastName, email , password} = req.body;
-        const existingUser = await userModel.findOne({email});
+        const validateData = userSignupSchema.parse(req.body);
+        const existingUser = await userModel.findOne({ email : validateData.email });
         if(existingUser){
             return res.status(400).json({message:"Email already in use"});
         }
 
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const newUser = new userModel({firstName, lastName, email, password: hashedPassword}); 
+        const hashedPassword = await bcrypt.hash(validateData.password, saltRounds);
+        const newUser = new userModel({...validateData, password: hashedPassword}); 
         // In abv we can also use userModel.create in order to create a new user
         await newUser.save();
 
@@ -29,19 +31,21 @@ userRouter.post('/signup',async (req,res)=>{
     }
 });
 
-userRouter.post('/signin',async (req,res)=>{
+userRouter.post('/login',async (req,res)=>{
         try{
-            const { email, password} = req.body;
-            const exisitingUser = await userModel.findOne({email});
+            const validateData = userLoginSchema.parse(req.body);
+
+            const exisitingUser = await userModel.findOne({email: validateData.email});
             if(!exisitingUser){
                 res.status(400).json({message:"User not found!"});
             }
 
-            const isMatch = await bcrypt.compare(password, exisitingUser.password);
+            const isMatch = await bcrypt.compare(validateData.password, exisitingUser.password);
             if(!isMatch){
                 res.status(401).json({message:"Invalid credentials"});
             }
 
+            const token = generateToken(exisitingUser);
             res.status(200).json({message:"Login Successful"});
         }catch(error){
             console.error("Signup Error:", error);
