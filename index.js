@@ -7,6 +7,7 @@ const { adminRouter } = require("./routes/admin");
 const {adminModel} = require("./models/allModel")
 const mongoose = require('mongoose');
 
+
 //middleware route
 app.use(express.json());
 
