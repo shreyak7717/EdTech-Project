@@ -6,9 +6,6 @@ const {userSignupSchema, userLoginSchema} = require("../utils/validation")
 const {generateToken ,verifyToken} = require("../utils/jwt");
 
 const saltRounds = 10;
-const myPlaintextPassword = 's0/\/\P4$$w0rD';
-const someOtherPlaintextPassword = 'not_bacon';
-
 
 userRouter.post('/signup',async (req,res)=>{
     try{
@@ -46,6 +43,14 @@ userRouter.post('/login',async (req,res)=>{
             }
 
             const token = generateToken(exisitingUser);
+
+            res.cookie("token", token, {
+                httpOnly: true,      // Prevents JS from accessing it (secure from XSS)
+                secure: true,        // Use true in production with HTTPS
+                sameSite: "strict",  // Prevents CSRF
+                maxAge: 3600000      // Optional: expires in 1 hour
+            });
+
             res.status(200).json({message:"Login Successful"});
         }catch(error){
             console.error("Signup Error:", error);

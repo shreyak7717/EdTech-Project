@@ -1,4 +1,6 @@
 require("dotenv").config();
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const express = require('express')
 const app = express()
 const { courseRouter } = require("./routes/course");
@@ -7,10 +9,14 @@ const { adminRouter } = require("./routes/admin");
 const {adminModel} = require("./models/allModel")
 const mongoose = require('mongoose');
 
+app.use(cors({
+    origin: "http://localhost:3000", // frontend URL
+    credentials: true
+}));
 
 //middleware route
 app.use(express.json());
-
+app.use(cookieParser());
 // createCourseRoute(app);
 
 app.use("/user", userRouter)
