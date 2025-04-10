@@ -1,13 +1,14 @@
 const bcrypt = require("bcrypt");
-const { userModel } = require("../models/allModel") ;
-const { generateUserToken } = require("../utils/jwt") ;
+const { adminModel } = require("../models/allModel") ;
+const {adminSignupSchema, adminLoginSchema } = require("../utils/validation")
+const { generateAdminToken } = require("../utils/jwt") ;
 
 const saltRounds = 10;
 
-const signupController = async(req,res)=>{
+const AdminsignupController = async(req,res)=>{
     try{
-        const validateData = userSignupSchema.parse(req.body);
-        const existingUser = await userModel.findOne({ email : validateData.email });
+        const validateData = adminSignupSchema.parse(req.body);
+        const existingUser = await adminModel.findOne({ email : validateData.email });
         if(existingUser){
             return res.status(400).json({message:"Email already in use"});
         }
@@ -25,11 +26,11 @@ const signupController = async(req,res)=>{
     }    
 }
 
-const loginController = async(req,res)=>{
+const AdminloginController = async(req,res)=>{
     try{
-        const validateData = userLoginSchema.parse(req.body);
+        const validateData = adminLoginSchema.parse(req.body);
 
-        const exisitingUser = await userModel.findOne({email: validateData.email});
+        const exisitingUser = await adminModel.findOne({email: validateData.email});
         if(!exisitingUser){
             res.status(400).json({message:"User not found!"});
         }
@@ -39,9 +40,9 @@ const loginController = async(req,res)=>{
             res.status(401).json({message:"Invalid credentials"});
         }
 
-        const token = generateUserToken(exisitingUser);
+        const token = generateAdminToken(exisitingUser);
 
-        res.cookie("Usertoken", token, {
+        res.cookie("Admintoken", token, {
             httpOnly: true,      // Prevents JS from accessing it (secure from XSS)
             secure: true,        // Use true in production with HTTPS
             sameSite: "strict",  // Prevents CSRF
@@ -55,4 +56,4 @@ const loginController = async(req,res)=>{
     }
 }
 
-module.exports = {signupController,loginController}
+module.exports = {AdminsignupController,AdminloginController}

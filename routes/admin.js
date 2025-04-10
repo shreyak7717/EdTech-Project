@@ -1,17 +1,10 @@
 const { Router } = require("express");
+const {AdminsignupController,AdminloginController} = require("../controllers/admin.controller")
 const adminRouter = Router();
 
-adminRouter.post("/login",(req,res)=>{
-    res.json({
-        message:"SignIn route"
-    });
-})
+adminRouter.post("/signup",AdminsignupController)
 
-adminRouter.post("/signup",(req,res)=>{
-    res.json({
-        message:"SignUp route"
-    });
-})
+adminRouter.post("/login",AdminloginController)
 
 adminRouter.post("/course",(req,res)=>{
     res.json({
